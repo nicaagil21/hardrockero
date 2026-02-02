@@ -1,4 +1,15 @@
 public class Facturador {
+    // Constantes No Primitivas (Objetos Wrapper)
+    static final Double BASE_HEAVY = 4000.0;
+    static final Double BASE_ROCK = 3000.0;
+    static final Integer UMBRAL_HEAVY = 500;
+    static final Integer UMBRAL_ROCK = 1000;
+    static final Integer EXTRA_HEAVY = 20;
+    static final Integer EXTRA_ROCK = 30;
+    static final Integer DIVISOR_CREDITOS_HEAVY = 5;
+    static final Double IVA = 0.21;
+    static final Double FACTOR_TOTAL = 1.21;
+
     // Repertorio de conciertos del grupo
     static String[][] repertorio = {
          {"Tributo Robe", "heavy"}
@@ -7,9 +18,7 @@ public class Facturador {
         ,{"Demonios Rojos", "heavy"}
     };
 
-    // Actuaciones realizadas indicando el concierto ofrecido y audiencias obtenidas.
     static Integer[][] actuaciones = {{0, 2222}, {2, 8888}, {0, 896}, {3, 999}};
-
     static String cliente = "Ayuntamiento de Badajoz";
 
     public static void main(String[] args) throws Exception {
@@ -24,7 +33,6 @@ public class Facturador {
             String tipo = repertorio[iConcierto][1];
             Integer asistentes = actuaciones[i][1];
 
-            // Uso de los métodos extraídos
             totalFactura += calcularImporteActuacion(tipo, asistentes);
             creditos += calcularCreditos(tipo, asistentes);
 
@@ -33,8 +41,8 @@ public class Facturador {
         }
 
         System.out.println("BASE IMPONIBLE: " + totalFactura + " euros");
-        System.out.printf("IVA (21%%): %.2f euros\n", totalFactura * 0.21);
-        System.out.printf("TOTAL FACTURA: %.2f euros\n", totalFactura * 1.21);
+        System.out.printf("IVA (21%%): %.2f euros\n", totalFactura * IVA);
+        System.out.printf("TOTAL FACTURA: %.2f euros\n", totalFactura * FACTOR_TOTAL);
         System.out.println("Créditos obtenidos: " + creditos);
     }
 
@@ -42,14 +50,14 @@ public class Facturador {
         Double importeActuacion = 0d;
         switch (tipo) {
             case "heavy":
-                importeActuacion = 4000d;
-                if (asistentes > 500)
-                    importeActuacion += 20 * (asistentes - 500);
+                importeActuacion = BASE_HEAVY;
+                if (asistentes > UMBRAL_HEAVY)
+                    importeActuacion += (double) EXTRA_HEAVY * (asistentes - UMBRAL_HEAVY);
                 break;
             case "rock":
-                importeActuacion = 3000d;
-                if (asistentes > 1000)
-                    importeActuacion += 30 * (asistentes - 1000);
+                importeActuacion = BASE_ROCK;
+                if (asistentes > UMBRAL_ROCK)
+                    importeActuacion += (double) EXTRA_ROCK * (asistentes - UMBRAL_ROCK);
                 break;
             default:
                 throw new Exception("Tipo de concierto desconocido.");
@@ -57,11 +65,10 @@ public class Facturador {
         return importeActuacion;
     }
 
-    // EXTRAER MÉTODO: calcularCreditos
     public static Integer calcularCreditos(String tipo, Integer asistentes) {
-        Integer creditosActuacion = Math.max(asistentes - 500, 0);
+        Integer creditosActuacion = Math.max(asistentes - UMBRAL_HEAVY, 0);
         if (tipo.equals("heavy")) {
-            creditosActuacion += asistentes / 5;
+            creditosActuacion += asistentes / DIVISOR_CREDITOS_HEAVY;
         }
         return creditosActuacion;
     }
