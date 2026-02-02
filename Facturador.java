@@ -1,5 +1,5 @@
 public class Facturador {
-    // Constantes No Primitivas (Objetos Wrapper)
+    // Constantes No Primitivas
     static final Double BASE_HEAVY = 4000.0;
     static final Double BASE_ROCK = 3000.0;
     static final Integer UMBRAL_HEAVY = 500;
@@ -10,40 +10,42 @@ public class Facturador {
     static final Double IVA = 0.21;
     static final Double FACTOR_TOTAL = 1.21;
 
-    // Repertorio de conciertos del grupo
-    static String[][] repertorio = {
+    // Renombrado: repertorio → catalogoConciertos
+    static String[][] catalogoConciertos = {
          {"Tributo Robe", "heavy"}
         ,{"Homaneje Queen", "pop"}
         ,{"Magia Knoppler", "rock"}
         ,{"Demonios Rojos", "heavy"}
     };
 
-    static Integer[][] actuaciones = {{0, 2222}, {2, 8888}, {0, 896}, {3, 999}};
+    // Renombrado: actuaciones → actuacionesRealizadas
+    static Integer[][] actuacionesRealizadas = {{0, 2222}, {2, 8888}, {0, 896}, {3, 999}};
     static String cliente = "Ayuntamiento de Badajoz";
 
     public static void main(String[] args) throws Exception {
         Double totalFactura = 0d;
-        Integer creditos = 0;
+        Integer creditosTotales = 0;
 
         System.out.println("FACTURA DE ACTUACIONES");
         System.out.println("Cliente: " + cliente);
 
-        for (int i = 0; i < actuaciones.length; i++) {
-            Integer iConcierto = actuaciones[i][0];
-            String tipo = repertorio[iConcierto][1];
-            Integer asistentes = actuaciones[i][1];
+        for (int i = 0; i < actuacionesRealizadas.length; i++) {
+            // Renombrado: iConcierto → indiceConcierto
+            Integer indiceConcierto = actuacionesRealizadas[i][0];
+            String tipoConcierto = catalogoConciertos[indiceConcierto][1];
+            Integer numeroAsistentes = actuacionesRealizadas[i][1];
 
-            totalFactura += calcularImporteActuacion(tipo, asistentes);
-            creditos += calcularCreditos(tipo, asistentes);
+            totalFactura += calcularImporteActuacion(tipoConcierto, numeroAsistentes);
+            creditosTotales += calcularCreditos(tipoConcierto, numeroAsistentes);
 
-            System.out.println("\tConcierto: " + repertorio[iConcierto][0]);
-            System.out.println("\t\tAsistentes: " + asistentes);
+            System.out.println("\tConcierto: " + catalogoConciertos[indiceConcierto][0]);
+            System.out.println("\t\tAsistentes: " + numeroAsistentes);
         }
 
         System.out.println("BASE IMPONIBLE: " + totalFactura + " euros");
         System.out.printf("IVA (21%%): %.2f euros\n", totalFactura * IVA);
         System.out.printf("TOTAL FACTURA: %.2f euros\n", totalFactura * FACTOR_TOTAL);
-        System.out.println("Créditos obtenidos: " + creditos);
+        System.out.println("Créditos obtenidos: " + creditosTotales);
     }
 
     public static Double calcularImporteActuacion(String tipo, Integer asistentes) throws Exception {
