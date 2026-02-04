@@ -1,77 +1,81 @@
-public class Facturador {
-    // Constantes No Primitivas
-    static final Double BASE_HEAVY = 4000.0;
-    static final Double BASE_ROCK = 3000.0;
-    static final Integer UMBRAL_HEAVY = 500;
-    static final Integer UMBRAL_ROCK = 1000;
-    static final Integer EXTRA_HEAVY = 20;
-    static final Integer EXTRA_ROCK = 30;
-    static final Integer DIVISOR_CREDITOS_HEAVY = 5;
-    static final Double IVA = 0.21;
-    static final Double FACTOR_TOTAL = 1.21;
+import java.util.ArrayList;
+import java.util.List;
 
-    // Renombrado: repertorio → catalogoConciertos
-    static String[][] catalogoConciertos = {
-         {"Tributo Robe", "heavy"}
-        ,{"Homaneje Queen", "pop"}
-        ,{"Magia Knoppler", "rock"}
-        ,{"Demonios Rojos", "heavy"}
+
+
+public class Facturador {
+
+    private static final Double PORCENTAJE_IVA = 0.21;
+
+    static String[][] repertorio = {
+        {"Tributo Robe", "heavy"},
+        {"Homenaje Queen", "rock"},
+        {"Magia Knoppler", "rock"},
+        {"Demonios Rojos", "heavy"}
     };
 
-    // Renombrado: actuaciones → actuacionesRealizadas
-    static Integer[][] actuacionesRealizadas = {{0, 2222}, {2, 8888}, {0, 896}, {3, 999}};
+public enum TipoConcierto {
+    HEAVY, 
+    ROCK;
+
+    public static TipoConcierto desdeString(String texto) {
+        return TipoConcierto.valueOf(texto.toUpperCase().trim());
+    }
+}
+
+    static Integer[][] datosActuaciones = {{0, 2000}, {2, 1200}, {0, 950}, {3, 1140}};
+
     static String cliente = "Ayuntamiento de Badajoz";
 
     public static void main(String[] args) throws Exception {
         Double totalFactura = 0d;
-        Integer creditosTotales = 0;
+        Integer creditos = 0;
 
         System.out.println("FACTURA DE ACTUACIONES");
         System.out.println("Cliente: " + cliente);
 
-        for (int i = 0; i < actuacionesRealizadas.length; i++) {
-            // Renombrado: iConcierto → indiceConcierto
-            Integer indiceConcierto = actuacionesRealizadas[i][0];
-            String tipoConcierto = catalogoConciertos[indiceConcierto][1];
-            Integer numeroAsistentes = actuacionesRealizadas[i][1];
+        List<Actuacion> listaActuaciones = crearListaActuaciones(datosActuaciones);
 
-            totalFactura += calcularImporteActuacion(tipoConcierto, numeroAsistentes);
-            creditosTotales += calcularCreditos(tipoConcierto, numeroAsistentes);
+        for (Actuacion actuacion : listaActuaciones) {
+            Integer indiceConcierto = actuacion.indiceConcierto();
+            Integer asistentes = actuacion.asistentes();
 
-            System.out.println("\tConcierto: " + catalogoConciertos[indiceConcierto][0]);
-            System.out.println("\t\tAsistentes: " + numeroAsistentes);
+            String tipoActuacion = repertorio[indiceConcierto][1];
+
+            totalFactura += calcularImporteActuacion(tipoActuacion, asistentes);
+            creditos += calcularCreditos(tipoActuacion, asistentes);
+
+            System.out.println("\tConcierto: " + repertorio[indiceConcierto][0]);
+            System.out.println("\t\tAsistentes: " + asistentes);
         }
 
         System.out.println("BASE IMPONIBLE: " + totalFactura + " euros");
-        System.out.printf("IVA (21%%): %.2f euros\n", totalFactura * IVA);
-        System.out.printf("TOTAL FACTURA: %.2f euros\n", totalFactura * FACTOR_TOTAL);
-        System.out.println("Créditos obtenidos: " + creditosTotales);
+        System.out.printf("IVA (21%%): %.2f euros\n", totalFactura * PORCENTAJE_IVA);
+        System.out.printf("TOTAL FACTURA: %.2f euros\n", totalFactura * (1 + PORCENTAJE_IVA));
+        System.out.println("Créditos obtenidos: " + creditos);
     }
 
-    public static Double calcularImporteActuacion(String tipo, Integer asistentes) throws Exception {
-        Double importeActuacion = 0d;
-        switch (tipo) {
-            case "heavy":
-                importeActuacion = BASE_HEAVY;
-                if (asistentes > UMBRAL_HEAVY)
-                    importeActuacion += (double) EXTRA_HEAVY * (asistentes - UMBRAL_HEAVY);
-                break;
-            case "rock":
-                importeActuacion = BASE_ROCK;
-                if (asistentes > UMBRAL_ROCK)
-                    importeActuacion += (double) EXTRA_ROCK * (asistentes - UMBRAL_ROCK);
-                break;
-            default:
-                throw new Exception("Tipo de concierto desconocido.");
+   
+    public static List<Actuacion> crearListaActuaciones(Integer[][] datosActuaciones) {
+        List<Actuacion> actuaciones = new ArrayList<>();
+        for (Integer[] datosActuacion : datosActuaciones) {
+            Integer indiceConcierto = datosActuacion[0];
+            Integer asistentes = datosActuacion[1];
+            
+            Actuacion actuacion = new Actuacion(indiceConcierto, asistentes);
+            actuaciones.add(actuacion);
         }
-        return importeActuacion;
+        return actuaciones;
     }
 
-    public static Integer calcularCreditos(String tipo, Integer asistentes) {
-        Integer creditosActuacion = Math.max(asistentes - UMBRAL_HEAVY, 0);
-        if (tipo.equals("heavy")) {
-            creditosActuacion += asistentes / DIVISOR_CREDITOS_HEAVY;
-        }
-        return creditosActuacion;
+    public static Double calcularImporteActuacion(String tipoActuacion, Integer asistentes) throws Exception {
+        return 0.0; 
+    }
+
+    public static Integer calcularCreditos(String tipoActuacion, Integer asistentes) {
+        return 0;
     }
 }
+
+
+record Actuacion(Integer indiceConcierto, Integer asistentes) {}
